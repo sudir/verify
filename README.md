@@ -1,15 +1,13 @@
 <p align="center"><h1>verify - v0.0.1</h1></p>
 <p align="center"><i>Validate language syntax for unit testing along with added Chef features for custom resources. 
-<br />Compatible with python 2.7 above,</i></p>
+<br />Compatible with python 2.7 above</i></p>
 
 
 ## Basic Overview
 [![Verify License](https://img.shields.io/badge/Licensed-Matt%20Trotter-orange.svg)](https://github.com/sudir/verify/blob/master/License.txt)
-[![CodeBlackExperts](https://img.shields.io/badge/SudirlayCoders-Experts-brightgreen.svg)](http://www.codeblacktech.com)
-[![Matt Trotter Code Gaurantee](https://img.shields.io/badge/Fully%20Tested-v1.0.4-red.svg)]()
+[![Matt Trotter Code Gaurantee](https://img.shields.io/badge/Fully%20Tested-v0.0.1-red.svg)]()
 
-
-<ul> Required Prerequisite 
+<ul> Required Prerequisites 
 <li> <i>For any bash or python scripts under validation, ensure the proper shebang is declared within script</i>
 <li> <i>For any custom written Chef recipe under validation, do not mix custom language resources within the same recipe</i>
 </ul> 
@@ -18,11 +16,13 @@
 Using verify is easy, simply download verify, assign executable permissions and move it to /usr/loca/bin, 
 <br>you can begin by typing <i>verify --help</i> to get started.
 
-
 ##### Declared logic within functions called from Menu arguments for ex:
 ```python
+
 # run tests on native scripts
 parser.add_argument("-b", "--bash", action="store_true",    help="validate native bash scripts")
+
+
 
 # Function to match
 def bash_native(fileinput, absolutepaths):  
