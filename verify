@@ -1,0 +1,159 @@
+#!/usr/bin/env python
+# Verify release ver. 0.0.1
+# Written by: Matthew L. Trotter (matthew.trotter@marriott.com -- from scratch like a pro
+#
+#
+#
+#_________________________________________________
+#                    __    __                     |
+#  /'\_/`\          /\ \__/\ \__                  |
+# /\      \     __  \ \ ,_\ \ ,_\                 |
+# \ \ \__\ \  /'__`\ \ \ \/\ \ \/                 |
+#  \ \ \_/\ \/\ \L\.\_\ \ \_\ \ \_                |
+#   \ \_\\ \_\ \__/.\_\\ \__\\ \__\               | 
+#    \/_/ \/_/\/__/\/_/ \/__/ \/__/               |
+#                                                 |
+# SRE  SRE  SRE   SRE   SRE   SRE   SRE   SRE     |     
+#  ______             __    __                    |
+# /\__  _\           /\ \__/\ \__                 |
+# \/_/\ \/ _ __   ___\ \ ,_\ \ ,_\    __   _ __   |
+#    \ \ \/\`'__\/ __`\ \ \/\ \ \/  /'__`\/\`'__\ |
+#     \ \ \ \ \//\ \L\ \ \ \_\ \ \_/\  __/\ \ \/  |
+#      \ \_\ \_\\ \____/\ \__\\ \__\ \____\\ \_\  |
+#       \/_/\/_/ \/___/  \/__/ \/__/\/____/ \/_/  |
+#_________________________________________________|
+#
+#
+
+
+import os
+import argparse
+import subprocess
+parser = argparse.ArgumentParser()
+
+# Fully interactive menu & help resources
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='displays helpful instructions')
+parser._positionals.title = 'Verify 0.0.1 Developed By: Matthew L. Trotter'+'\n'+'\n'+'Execute verify on a file'
+
+parser._optionals.title = 'Available Arguments'
+parser.add_argument("target",                              help="ex: verify --option or -flag target")
+parser.add_argument('-v', '--version', action='version', version='Verify 0.0.1', help="displays current program version")
+
+# run tests on chef recipe
+parser.add_argument("-cp", "--cpython", action="store_true",    help="validate custom python syntax in chef recipe")
+parser.add_argument("-cb", "--cbash", action="store_true",    help="validate custom bash syntax in chef recipe")
+
+# run tests on native scripts
+parser.add_argument("-b", "--bash", action="store_true",    help="validate native bash scripts")
+parser.add_argument("-p", "--python", action="store_true",    help="validate native python scripts")
+
+# git functionality - Coming Soon....next release
+#parser.add_argument("-d", "--deploy", action="store_true",  help="git push validated code to origin master")
+#parser.add_argument("-g", "--get", action="store_true",    help="git pull code from specified branch")
+
+# Essential vars
+args = parser.parse_args()
+fileinput = args.target
+absolutepaths=os.path.abspath(args.target)
+
+# Bash Language
+def bash_resource(fileinput, absolutepaths):
+  with open(fileinput) as codefile:
+    if 'bash' and 'EOH' in codefile.read():
+         # If no error is found dont record a test case, send verificaion to stdout
+         FNULL = open(os.devnull, 'w')
+         resout=subprocess.Popen("sed -n '/EOH/,/EOH/p' "+ fileinput +" | sed '/EOH/d' | bash -n", shell=True, stderr=subprocess.PIPE, stdout=FNULL)
+         out, err = resout.communicate()
+         if err == "":
+           print('Pass, no bash syntax errors detected for Chef recipe: '+fileinput)
+         else:
+         # If theres a problem, record a testcase and send results to stdout
+          with open(fileinput+'.testcase','w') as codefile:
+           subprocess.call('echo Test case report inititated $(date) '+'\n'+"echo Fail, bash syntax errors detected for Chef recipe: "+ fileinput+"\n"+'echo Recipe location: '+absolutepaths+'\n'+'\n '+"sed -n '/EOH/,/EOH/p' "+ fileinput +" | sed '/EOH/d' | bash -n", shell=True, stderr=codefile, stdout=codefile)
+          with open(fileinput+'.testcase', 'r') as aiostream:
+           print aiostream.read()
+    else:
+     print("Compatibility issue: No bash resource detected")        
+    
+def bash_native(fileinput, absolutepaths):  
+  with open(fileinput) as codefile:
+    if '#!/bin/bash' in codefile.read():
+         # If no error is found?
+         FNULL = open(os.devnull, 'w')
+         resout=subprocess.Popen("bash -n " + fileinput, shell=True, stderr=subprocess.PIPE, stdout=FNULL)
+         out, err = resout.communicate()
+         if err == "":
+          print('Pass, no bash syntax errors detected for:'+' '+fileinput)
+         else:
+         # If theres a problem, tell me what it is
+          with open(fileinput+'.testcase','w') as codefile:
+           subprocess.call('echo Test case report inititated $(date) '+'\n'+"echo Fail, bash syntax errors detected for: "+ fileinput+"\n"+"bash -n " + fileinput, shell=True, stderr=codefile, stdout=codefile)
+          with open(fileinput+'.testcase', 'r') as aiostream:
+           print aiostream.read()
+    else:
+         # Compatibility issue
+         print('Compatibility issue: Syntax detected is not bash, try python or a chef resource')
+
+
+# Python Language
+def python_resource(fileinput, absolutepaths):
+  with open(fileinput) as codefile:
+    if 'python' and 'EOH' in codefile.read():
+         # If no error is found dont record a test case, send verificaion to stdout
+         FNULL = open(os.devnull, 'w')
+         resout=subprocess.Popen("sed -n '/EOH/,/EOH/p' "+ fileinput +" | sed '/EOH/d'>tmp.tmp"+"| python -m py_compile tmp.tmp", shell=True, stderr=subprocess.PIPE, stdout=FNULL)
+         out, err = resout.communicate()
+         if err == "":
+           print('Pass, no python syntax errors detected for Chef recipe: '+fileinput)
+           subprocess.call('rm -fr *.pyc', shell=True)
+         else:
+         # If theres a problem, record a testcase and send results to stdout
+          with open(fileinput+'.testcase','w') as codefile:
+           subprocess.call('echo Test case report inititated $(date) '+'\n'+"echo Fail, python syntax errors detected for Chef recipe: "+ fileinput+"\n"+'echo Recipe location: '+absolutepaths+'\n'+'\n '+"sed -n '/EOH/,/EOH/p' "+ fileinput +" | sed '/EOH/d'>tmp.tmp"+"| python -m py_compile tmp.tmp", shell=True, stderr=codefile, stdout=codefile)
+          with open(fileinput+'.testcase', 'r') as aiostream:
+           print aiostream.read()
+           subprocess.call('rm -fr tmp.tmp', shell=True)
+
+    else:
+     print("Compatibility issue: No python resource detected")        
+    
+def python_native(fileinput, absolutepaths):  
+  with open(fileinput) as codefile:
+    if '#!/usr/bin/env python' in codefile.read():
+         # If no error is found?
+         FNULL = open(os.devnull, 'w')
+         resout=subprocess.Popen("python -m py_compile " + fileinput, shell=True, stderr=subprocess.PIPE, stdout=FNULL)
+         out, err = resout.communicate()
+         if err == "":
+          print('Pass, no python syntax errors detected for:'+' '+fileinput)
+          subprocess.call('rm -fr *.pyc', shell=True)
+
+         else:
+         # If theres a problem, tell me what it is
+          with open(fileinput+'.testcase','w') as codefile:
+           subprocess.call('echo Test case report inititated $(date) '+'\n'+"echo Fail, python syntax errors detected for: "+ fileinput+'\n '+"python -m py_compile " + fileinput, shell=True, stderr=codefile, stdout=codefile)
+          with open(fileinput+'.testcase', 'r') as aiostream:
+           print aiostream.read()
+
+    else:
+         # Compatibility issue
+         print('Compatibility issue: Syntax detected is not python, try bash or a chef resource')
+
+
+# Menu Selections
+if args.cbash:
+ bash_resource(fileinput, absolutepaths)
+
+elif args.bash:
+ bash_native(fileinput, absolutepaths)
+
+elif args.cpython:
+ python_resource(fileinput, absolutepaths)
+
+elif args.python:
+ python_native(fileinput, absolutepaths)
+
+else:
+ print('Error missing arguments, example: verify -option or --option target')
+ 
