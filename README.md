@@ -44,4 +44,4 @@ def bash_native(fileinput, absolutepaths):
 ```
 
 <i>More to come soon....</i>
-<br />Invented By: <i>Matthew Trotter</i>
+<br />Invented By: <i>Sulayman Touray</i>
