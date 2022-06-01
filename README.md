@@ -5,7 +5,7 @@
 
 ## Basic Overview
 [![Verify License](https://img.shields.io/badge/Licensed-Matt%20Trotter-orange.svg)](https://github.com/sudir/verify/blob/master/License.txt)
-[![Matt Trotter Code Gaurantee](https://img.shields.io/badge/Fully%20Tested-v0.0.1-red.svg)]()
+[![Sulayman Touray Code Gaurantee](https://img.shields.io/badge/Fully%20Tested-v0.0.1-red.svg)]()
 
 <ul> Required Prerequisites 
 <li> <i>For any bash or python scripts under validation, ensure the proper shebang is declared within script</i>
