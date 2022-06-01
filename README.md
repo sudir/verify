@@ -4,7 +4,7 @@
 
 
 ## Basic Overview
-[![Verify License](https://img.shields.io/badge/Licensed-Matt%20Trotter-orange.svg)](https://github.com/sudir/verify/blob/master/License.txt)
+[![Verify License](https://img.shields.io/badge/Licensed-Sulayman%20Touray-orange.svg)](https://github.com/sudir/verify/blob/master/License.txt)
 [![Sulayman Touray Code Gaurantee](https://img.shields.io/badge/Fully%20Tested-v0.0.1-red.svg)]()
 
 <ul> Required Prerequisites 
